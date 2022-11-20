@@ -1,7 +1,11 @@
+import * as React from 'react';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import Public from './components/Public'
-import Login from './features/auth/Login';
+import Login from './features/auth/SignInSide';
 import DashLayout from './components/DashLayout'
 import Welcome from './features/auth/Welcome'
 import NotesList from './features/notes/NotesList'
@@ -18,9 +22,22 @@ import useTitle from './hooks/useTitle';
 
 function App() {
   useTitle('JLZKDEV Repairs')
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+  const theme = React.useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: prefersDarkMode ? 'dark' : 'light',
+        },
+      }),
+    [prefersDarkMode],
+  );
 
   return (
-    <Routes>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Routes>
       <Route path="/" element={<Layout />}>
         {/* public routes */}
         <Route index element={<Public />} />
@@ -55,6 +72,8 @@ function App() {
 
       </Route>
     </Routes >
+    </ThemeProvider>
+    
   );
 }
 
