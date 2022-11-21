@@ -1,11 +1,11 @@
+import * as React from 'react';
 import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useSendLogoutMutation } from '../features/auth/authApiSlice'
 import useAuth from '../hooks/useAuth'
 import PulseLoader from 'react-spinners/PulseLoader'
-import * as React from 'react';
-import { styled, useTheme, alpha } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar from '@mui/material/AppBar';
@@ -21,23 +21,16 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import InputBase from '@mui/material/InputBase';
-import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import NoteAltIcon from '@mui/icons-material/NoteAlt';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import HomeIcon from '@mui/icons-material/Home';
-import LogoutIcon from '@mui/icons-material/Logout';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const DASH_REGEX = /^\/dash(\/)?$/
 const NOTES_REGEX = /^\/dash\/notes(\/)?$/
@@ -70,7 +63,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
     ...theme.mixins.toolbar,
 }));
 
@@ -146,18 +138,16 @@ export default function DashLayout() {
     let newNoteButton = null
     if (NOTES_REGEX.test(pathname)) {
         newNoteButton = (
-      
+
             <MenuItem>
                 <IconButton
                     size="large"
                     onClick={onNewNoteClicked}
                     color="inherit"
                 >
-                    <Badge badgeContent={17} color="error">
-                        <NoteAltIcon />
-                    </Badge>
+                    <NoteAltIcon />
                 </IconButton>
-                
+
             </MenuItem>
         )
     }
@@ -172,11 +162,9 @@ export default function DashLayout() {
                     onClick={onNewUserClicked}
                     color="inherit"
                 >
-                    <Badge badgeContent={17} color="error">
-                        <PersonAddIcon />
-                    </Badge>
+                    <PersonAddIcon />
                 </IconButton>
-               
+
             </MenuItem>
         )
     }
@@ -192,11 +180,9 @@ export default function DashLayout() {
                         onClick={onUsersClicked}
                         color="inherit"
                     >
-                        <Badge badgeContent={17} color="error">
-                            <ManageAccountsIcon />
-                        </Badge>
+                        <ManageAccountsIcon />
                     </IconButton>
-                    
+
                 </MenuItem>
             )
         }
@@ -205,38 +191,21 @@ export default function DashLayout() {
     let notesButton = null
     if (!NOTES_REGEX.test(pathname) && pathname.includes('/dash')) {
         notesButton = (
-            
-             <MenuItem>
-             <IconButton
-                 size="large"
-                 onClick={onNotesClicked}
-                 color="inherit"
-             >
-                 <Badge badgeContent={17} color="error">
-                     <NoteAddIcon  />
-                 </Badge>
-             </IconButton>
-             
-         </MenuItem>
+
+            <MenuItem>
+                <IconButton
+                    size="large"
+                    onClick={onNotesClicked}
+                    color="inherit"
+                >
+                    <NoteAddIcon />
+
+                </IconButton>
+
+            </MenuItem>
         )
     }
 
-    const logoutButton = (
-        <MenuItem>
-        <IconButton
-            size="large"
-            onClick={sendLogout}
-            color="inherit"
-        >
-            <Badge badgeContent={17} color="error">
-                <LogoutIcon  />
-            </Badge>
-        </IconButton>
-        
-    </MenuItem>
-    )
-
-    const errClass = isError ? "errmsg" : "offscreen"
 
     let buttonContent
     if (isLoading) {
@@ -248,7 +217,6 @@ export default function DashLayout() {
                 {newUserButton}
                 {notesButton}
                 {userButton}
-                {logoutButton}
             </>
         )
     }
@@ -298,6 +266,7 @@ export default function DashLayout() {
         >
             <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
             <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+            <MenuItem onClick={sendLogout}>Signout</MenuItem>
         </Menu>
     );
 
@@ -319,26 +288,8 @@ export default function DashLayout() {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem>
-                <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                    <Badge badgeContent={4} color="error">
-                        <MailIcon />
-                    </Badge>
-                </IconButton>
-                <p>Messages</p>
-            </MenuItem>
-            <MenuItem>
-                <IconButton
-                    size="large"
-                    aria-label="show 17 new notifications"
-                    color="inherit"
-                >
-                    <Badge badgeContent={17} color="error">
-                        <NotificationsIcon />
-                    </Badge>
-                </IconButton>
-                <p>Notifications</p>
-            </MenuItem>
+            {buttonContent}
+
             <MenuItem onClick={handleProfileMenuOpen}>
                 <IconButton
                     size="large"
@@ -349,33 +300,11 @@ export default function DashLayout() {
                 >
                     <AccountCircle />
                 </IconButton>
-                <p>Profile</p>
             </MenuItem>
         </Menu>
     );
 
-
-    // const { username, status } = useAuth()
-
-    // const onGoHomeClicked = () => navigate('/dash')
-
-    // let goHomeButton = null
-
-    // if (pathname !== '/dash') {
-    //     goHomeButton = (
-        
-    //         <IconButton
-    //         size="large"
-    //         onClick={sendLogout}
-    //         color="inherit"
-    //     >
-    //         <Badge badgeContent={17} color="error">
-    //             <HomeIcon  />
-    //         </Badge>
-    //     </IconButton>
-    //     )
-    // }
-
+    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
     return (
         <>
@@ -400,17 +329,17 @@ export default function DashLayout() {
                             variant="h6"
                             noWrap
                             component="div"
-                            sx={{ display: { xs: 'none', sm: 'block' } }}
+                            sx={{ display: { sm: 'block' } }}
                         >
                             DevNotes
                         </Typography>
-                        
+
                         <Box sx={{ flexGrow: 1 }} />
                         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
 
                             {buttonContent}
 
-                           
+
                             <IconButton
                                 size="large"
                                 edge="end"
@@ -421,6 +350,7 @@ export default function DashLayout() {
                                 color="inherit"
                             >
                                 <AccountCircle />
+
                             </IconButton>
 
                         </Box>
@@ -440,6 +370,8 @@ export default function DashLayout() {
                         </Box>
                     </Toolbar>
                 </AppBar>
+                {renderMobileMenu}
+                {renderMenu}
                 <Drawer variant="permanent" open={open}>
                     <DrawerHeader>
                         <IconButton onClick={handleDrawerClose}>
@@ -448,7 +380,7 @@ export default function DashLayout() {
                     </DrawerHeader>
                     <Divider />
                     <List>
-                        <ListItem component={Link} to="/dash/notes" disablePadding sx={{ display: 'block' }}>
+                        <ListItem component={Link} to="/dash/notes" disablePadding sx={{ display: 'block' , color: 'inherit'}}>
                             <ListItemButton sx={{
                                 minHeight: 48,
                                 justifyContent: open ? 'initial' : 'center',
@@ -469,7 +401,7 @@ export default function DashLayout() {
                                     sx={{ opacity: open ? 1 : 0 }} />
                             </ListItemButton>
                         </ListItem>
-                        <ListItem component={Link} to="/dash/notes/new" disablePadding sx={{ display: 'block' }}>
+                        <ListItem component={Link} to="/dash/notes/new" disablePadding sx={{ display: 'block' , color: 'inherit'}}>
                             <ListItemButton sx={{
                                 minHeight: 48,
                                 justifyContent: open ? 'initial' : 'center',
@@ -490,28 +422,7 @@ export default function DashLayout() {
                                     sx={{ opacity: open ? 1 : 0 }} />
                             </ListItemButton>
                         </ListItem>
-                        {(isManager || isAdmin) && <ListItem component={Link} to="/dash/users" disablePadding sx={{ display: 'block' }}>
-                            <ListItemButton sx={{
-                                minHeight: 48,
-                                justifyContent: open ? 'initial' : 'center',
-                                px: 2.5,
-                            }}>
-
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 0,
-                                        mr: open ? 3 : 'auto',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    <PersonAddIcon />
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary="View User Settings"
-                                    sx={{ opacity: open ? 1 : 0 }} />
-                            </ListItemButton>
-                        </ListItem>}
-                        {(isManager || isAdmin) && <ListItem component={Link} to="/dash/users/new" disablePadding sx={{ display: 'block' }}>
+                        {(isManager || isAdmin) && <ListItem component={Link} to="/dash/users" disablePadding sx={{ display: 'block' , color: 'inherit'}}>
                             <ListItemButton sx={{
                                 minHeight: 48,
                                 justifyContent: open ? 'initial' : 'center',
@@ -528,6 +439,28 @@ export default function DashLayout() {
                                     <ManageAccountsIcon />
                                 </ListItemIcon>
                                 <ListItemText
+                                    primary="View User Settings"
+                                    sx={{ opacity: open ? 1 : 0 }} />
+                            </ListItemButton>
+                        </ListItem>}
+                        {(isManager || isAdmin) && <ListItem component={Link} to="/dash/users/new" disablePadding sx={{ display: 'block', color: 'inherit' }}>
+                            <ListItemButton sx={{
+                                minHeight: 48,
+                                justifyContent: open ? 'initial' : 'center',
+                                px: 2.5,
+                            }}>
+
+                                <ListItemIcon
+                                    sx={{
+                                        minWidth: 0,
+                                        mr: open ? 3 : 'auto',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+
+                                    <PersonAddIcon />
+                                </ListItemIcon>
+                                <ListItemText
                                     primary="Add New User"
                                     sx={{ opacity: open ? 1 : 0 }} />
                             </ListItemButton>
@@ -536,7 +469,7 @@ export default function DashLayout() {
 
                 </Drawer>
 
-                <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+                <Box component="main" sx={{ p: 1 }}>
                     <DrawerHeader />
                     <Outlet />
                 </Box>

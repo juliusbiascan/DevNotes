@@ -1,10 +1,20 @@
 import { useState, useEffect } from "react"
 import { useUpdateNoteMutation, useDeleteNoteMutation } from "./notesApiSlice"
 import { useNavigate } from "react-router-dom"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSave, faTrashCan } from "@fortawesome/free-solid-svg-icons"
 import useAuth from "../../hooks/useAuth"
-
+import * as React from 'react';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Select from '@mui/material/Select';
+import { InputLabel, MenuItem } from "@mui/material"
+import SaveIcon from '@mui/icons-material/Save';
+import IconButton from "@mui/material/IconButton"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import Checkbox from "@mui/material/Checkbox"
+import DeleteIcon from '@mui/icons-material/Delete';
 const EditNoteForm = ({ note, users }) => {
 
     const { isManager, isAdmin } = useAuth()
@@ -62,17 +72,13 @@ const EditNoteForm = ({ note, users }) => {
 
     const options = users.map(user => {
         return (
-            <option
+            <MenuItem
                 key={user.id}
-                value={user.id}
-
-            > {user.username}</option >
+                value={user.id}>
+                {user.username}
+            </MenuItem>
         )
     })
-
-    const errClass = (isError || isDelError) ? "errmsg" : "offscreen"
-    const validTitleClass = !title ? "form__input--incomplete" : ''
-    const validTextClass = !text ? "form__input--incomplete" : ''
 
     const errContent = (error?.data?.message || delerror?.data?.message) ?? ''
 
@@ -80,88 +86,119 @@ const EditNoteForm = ({ note, users }) => {
     let deleteButton = null
     if (isManager || isAdmin) {
         deleteButton = (
-            <button
-                className="icon-button"
-                title="Delete"
+
+            <IconButton
+                type="submit"
+                title="Save"
                 onClick={onDeleteNoteClicked}
+
             >
-                <FontAwesomeIcon icon={faTrashCan} />
-            </button>
+                <DeleteIcon />
+            </IconButton>
         )
     }
 
     const content = (
         <>
-            <p className={errClass}>{errContent}</p>
+            <Container component="main" maxWidth="xs">
+                <CssBaseline />
+                <Box
+                    component="form" noValidate onSubmit={e => e.preventDefault()}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
 
-            <form className="form" onSubmit={e => e.preventDefault()}>
-                <div className="form__title-row">
-                    <h2>Edit Note #{note.ticket}</h2>
-                    <div className="form__action-buttons">
-                        <button
-                            className="icon-button"
-                            title="Save"
-                            onClick={onSaveNoteClicked}
-                            disabled={!canSave}
-                        >
-                            <FontAwesomeIcon icon={faSave} />
-                        </button>
-                        {deleteButton}
-                    </div>
-                </div>
-                <label className="form__label" htmlFor="note-title">
-                    Title:</label>
-                <input
-                    className={`form__input ${validTitleClass}`}
-                    id="note-title"
-                    name="title"
-                    type="text"
-                    autoComplete="off"
-                    value={title}
-                    onChange={onTitleChanged}
-                />
+                    }}
+                >
+                    <Box
+                        sx={{
+                            marginTop: 4,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
+                        }}
+                    >
+                        <Typography component="h1" variant="h5">
+                            Edit Note #{note.ticket}
+                        </Typography>
+                        <Box sx={{ display: 'flex' }}>
+                            <IconButton
+                                type="submit"
+                                title="Save"
+                                onClick={onSaveNoteClicked}
+                                disabled={!canSave}
+                            >
+                                <SaveIcon />
+                            </IconButton>
+                            {deleteButton}
+                        </Box>
 
-                <label className="form__label" htmlFor="note-text">
-                    Text:</label>
-                <textarea
-                    className={`form__input form__input--text ${validTextClass}`}
-                    id="note-text"
-                    name="text"
-                    value={text}
-                    onChange={onTextChanged}
-                />
-                <div className="form__row">
-                    <div className="form__divider">
-                        <label className="form__label form__checkbox-container" htmlFor="note-completed">
-                            WORK COMPLETE:
-                            <input
-                                className="form__checkbox"
-                                id="note-completed"
+                    </Box>
+
+                    <Typography component="h1" variant="h5">
+                        {errContent}
+                    </Typography>
+
+                    <Box sx={{ mt: 1 }}>
+
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            label="Title"
+                            autoFocus
+                            id="note-title"
+                            name="title"
+                            type="text"
+                            autoComplete="off"
+                            value={title}
+                            onChange={onTitleChanged}
+                        />
+
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            multiline
+                            rows={4}
+                            id="text"
+                            name="text"
+                            label="Note"
+                            value={text}
+                            onChange={onTextChanged}
+                        />
+
+                        <FormControlLabel
+                            control={<Checkbox id="note-completed"
                                 name="completed"
                                 type="checkbox"
                                 checked={completed}
-                                onChange={onCompletedChanged}
-                            />
-                        </label>
+                                onChange={onCompletedChanged} />} label="Mark as done" />
 
-                        <label className="form__label form__checkbox-container" htmlFor="note-username">
-                            ASSIGNED TO:</label>
-                        <select
-                            id="note-username"
-                            name="username"
-                            className="form__select"
+
+                        <InputLabel sx={{ marginTop: 4 }} id="selectlabel">Assigned to:</InputLabel>
+
+                        <Select
+                            margin="normal"
+                            fullWidth
+                            labelId="selectlabel"
+                            id="demo-select-small"
                             value={userId}
                             onChange={onUserIdChanged}
                         >
                             {options}
-                        </select>
-                    </div>
-                    <div className="form__divider">
-                        <p className="form__created">Created:<br />{created}</p>
-                        <p className="form__updated">Updated:<br />{updated}</p>
-                    </div>
-                </div>
-            </form>
+
+                        </Select>
+
+                        <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 5 }} paragraph>
+                            Created:<br />{created}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 5 }} paragraph>
+                            Updated:<br />{updated}
+                        </Typography>
+                    </Box>
+                </Box>
+
+            </Container>
         </>
     )
 

@@ -1,8 +1,16 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAddNewNoteMutation } from "./notesApiSlice"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSave } from "@fortawesome/free-solid-svg-icons"
+import * as React from 'react';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Select from '@mui/material/Select';
+import { InputLabel, MenuItem } from "@mui/material"
+import SaveIcon from '@mui/icons-material/Save';
+import IconButton from "@mui/material/IconButton"
 
 const NewNoteForm = ({ users }) => {
 
@@ -43,69 +51,87 @@ const NewNoteForm = ({ users }) => {
 
     const options = users.map(user => {
         return (
-            <option
-                key={user.id}
-                value={user.id}
-            > {user.username}</option >
+            <MenuItem key={user.id}
+                value={user.id}>{user.username}</MenuItem>
         )
     })
 
-    const errClass = isError ? "errmsg" : "offscreen"
-    const validTitleClass = !title ? "form__input--incomplete" : ''
-    const validTextClass = !text ? "form__input--incomplete" : ''
-
     const content = (
         <>
-            <p className={errClass}>{error?.data?.message}</p>
+            <Container component="main" maxWidth="xs">
+                <CssBaseline />
+                <Box
+                    component="form" noValidate onSubmit={onSaveNoteClicked}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
 
-            <form className="form" onSubmit={onSaveNoteClicked}>
-                <div className="form__title-row">
-                    <h2>New Note</h2>
-                    <div className="form__action-buttons">
-                        <button
-                            className="icon-button"
+                    }}
+                >
+                    <Box
+                        sx={{
+                            marginTop: 4,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
+                        }}
+                    >
+                        <Typography component="h1" variant="h5">
+                            New Note
+                        </Typography>
+                        <IconButton
+                            type="submit"
                             title="Save"
                             disabled={!canSave}
                         >
-                            <FontAwesomeIcon icon={faSave} />
-                        </button>
-                    </div>
-                </div>
-                <label className="form__label" htmlFor="title">
-                    Title:</label>
-                <input
-                    className={`form__input ${validTitleClass}`}
-                    id="title"
-                    name="title"
-                    type="text"
-                    autoComplete="off"
-                    value={title}
-                    onChange={onTitleChanged}
-                />
+                            <SaveIcon />
+                        </IconButton>
+                    </Box>
 
-                <label className="form__label" htmlFor="text">
-                    Text:</label>
-                <textarea
-                    className={`form__input form__input--text ${validTextClass}`}
-                    id="text"
-                    name="text"
-                    value={text}
-                    onChange={onTextChanged}
-                />
+                    <Typography component="h1" variant="h5">
+                        {error?.data?.message}
+                    </Typography>
+                    <Box sx={{ mt: 1 }}>
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            id="title"
+                            name="title"
+                            label="Title"
+                            autoFocus
+                            onChange={onTitleChanged}
+                        />
 
-                <label className="form__label form__checkbox-container" htmlFor="username">
-                    ASSIGNED TO:</label>
-                <select
-                    id="username"
-                    name="username"
-                    className="form__select"
-                    value={userId}
-                    onChange={onUserIdChanged}
-                >
-                    {options}
-                </select>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            multiline
+                            rows={4}
+                            id="text"
+                            name="text"
+                            label="Note"
+                            value={text}
+                            onChange={onTextChanged}
+                        />
 
-            </form>
+                        <InputLabel sx={{ marginTop: 4 }} id="selectlabel">Assigned to:</InputLabel>
+
+                        <Select
+                            margin="normal"
+                            fullWidth
+                            labelId="selectlabel"
+                            id="demo-select-small"
+                            value={userId}
+                            onChange={onUserIdChanged}
+                        >
+                            {options}
+                        </Select>
+
+                    </Box>
+                </Box>
+
+            </Container>
         </>
     )
 

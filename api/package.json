@@ -1,5 +1,5 @@
 {
-  "name": "lesson_12-be",
+  "name": "devnotes-api",
   "version": "1.0.0",
   "description": "DevNotes MERN Project",
   "main": "server.js",

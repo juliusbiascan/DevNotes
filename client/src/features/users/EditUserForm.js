@@ -1,3 +1,14 @@
+import * as React from 'react';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import SaveIcon from '@mui/icons-material/Save';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from "@mui/material/IconButton"
+import {FormControlLabel , Checkbox} from '@mui/material';
+import { InputLabel } from "@mui/material"
 import { useState, useEffect } from "react"
 import { useUpdateUserMutation, useDeleteUserMutation } from "./usersApiSlice"
 import { useNavigate } from "react-router-dom"
@@ -103,79 +114,107 @@ const EditUserForm = ({ user }) => {
 
     const content = (
         <>
-            <p className={errClass}>{errContent}</p>
+           
+            <Container component="main" maxWidth="xs">
+                <CssBaseline />
+                <Box
+                    component="form" noValidate onSubmit={onSaveUserClicked}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
 
-            <form className="form" onSubmit={e => e.preventDefault()}>
-                <div className="form__title-row">
-                    <h2>Edit User</h2>
-                    <div className="form__action-buttons">
-                        <button
-                            className="icon-button"
-                            title="Save"
-                            onClick={onSaveUserClicked}
-                            disabled={!canSave}
-                        >
-                            <FontAwesomeIcon icon={faSave} />
-                        </button>
-                        <button
-                            className="icon-button"
-                            title="Delete"
-                            onClick={onDeleteUserClicked}
-                        >
-                            <FontAwesomeIcon icon={faTrashCan} />
-                        </button>
-                    </div>
-                </div>
-                <label className="form__label" htmlFor="username">
-                    Username: <span className="nowrap">[3-20 letters]</span></label>
-                <input
-                    className={`form__input ${validUserClass}`}
-                    id="username"
-                    name="username"
-                    type="text"
-                    autoComplete="off"
-                    value={username}
-                    onChange={onUsernameChanged}
-                />
-
-                <label className="form__label" htmlFor="password">
-                    Password: <span className="nowrap">[empty = no change]</span> <span className="nowrap">[4-12 chars incl. !@#$%]</span></label>
-                <input
-                    className={`form__input ${validPwdClass}`}
-                    id="password"
-                    name="password"
-                    type="password"
-                    value={password}
-                    onChange={onPasswordChanged}
-                />
-
-                <label className="form__label form__checkbox-container" htmlFor="user-active">
-                    ACTIVE:
-                    <input
-                        className="form__checkbox"
-                        id="user-active"
-                        name="user-active"
-                        type="checkbox"
-                        checked={active}
-                        onChange={onActiveChanged}
-                    />
-                </label>
-
-                <label className="form__label" htmlFor="roles">
-                    ASSIGNED ROLES:</label>
-                <select
-                    id="roles"
-                    name="roles"
-                    className={`form__select ${validRolesClass}`}
-                    multiple={true}
-                    size="3"
-                    value={roles}
-                    onChange={onRolesChanged}
+                    }}
                 >
-                    {options}
-                </select>
+                    <Box
+                        sx={{
+                            marginTop: 4,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
+                        }}
+                    >
+                        <Typography component="h1" variant="h5">
+                            Edit User
+                        </Typography>
+                        <Box sx={{ display: "flex" }}>
 
-            </form>
+                            <IconButton
+                                type="submit"
+                                title="Save"
+                                onClick={onSaveUserClicked}
+                                disabled={!canSave}
+                            >
+                                <SaveIcon />
+                            </IconButton>
+
+                            <IconButton
+                                type="submit"
+                                title="Delete"
+                                onClick={onDeleteUserClicked}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </Box>
+
+                    </Box>
+
+                    <Typography component="h1" variant="h5">
+                        {errContent}
+                    </Typography>
+
+                    <Box sx={{ mt: 1 }}>
+
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            id="username"
+                            name="username"
+                            label="username"
+                            autoFocus
+                            value={username}
+                            onChange={onUsernameChanged}
+                        />
+
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            label="Password "
+                            id="password"
+                            name="password"
+                            type="password"
+                            value={password}
+                            onChange={onPasswordChanged}
+                        />
+
+                        <FormControlLabel
+                            control={
+                                <Checkbox id="user-active"
+                                    name="user-active"
+                                    type="checkbox"
+                                    checked={active}
+                                    onChange={onActiveChanged} />} label="Active" />
+
+                        <InputLabel sx={{ marginTop: 4 }} id="selectlabel">ASSIGNED ROLES:</InputLabel>
+
+                        <select
+                            margin="normal"
+                            fullWidth
+                            labelId="selectlabel"
+                            id="roles"
+                            name="roles"
+                            multiple={true}
+                            size="3"
+                            value={roles}
+                            onChange={onRolesChanged}
+                        >
+                            {options}
+                        </select>
+
+                    </Box>
+                </Box>
+
+            </Container>
         </>
     )
 
